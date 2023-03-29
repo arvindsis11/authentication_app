@@ -4,7 +4,8 @@ import {Toaster} from 'react-hot-toast';
 import {useFormik} from 'formik';
 import { usernameValidate } from './helper/validate';
 import './style.css';
-
+// import styles from './styles/Username.module.css';
+/**another way to use styles */
 export default function Username() {
 
   const formik = useFormik({
@@ -29,6 +30,7 @@ export default function Username() {
             <div className="col-12 col-md-8 col-lg-6 col-xl-5">
               <div className="card shadow-2-strong" style={{ "borderRadius": "1rem" }}>
                 <div className="card-body p-5 text-center">
+                  {/* <h3 className={styles.test}>testing</h3> */}
                   <h3 className="mb-5">Sign in</h3>
                   <form onSubmit={formik.handleSubmit}>
                     <div className="form-group my-4">
