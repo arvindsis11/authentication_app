@@ -5,7 +5,7 @@ import { useFormik } from 'formik';
 import { profileValidation } from './helper/validate';
 import userpic from './assets/userpic.jpg';
 import convertToBase64 from './helper/convert';
-import './style.css';
+import './style/style.css';
 
 export default function Profile() {
 
