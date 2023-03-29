@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { useFormik } from 'formik';
-import { usernameValidate } from './helper/validate';
+import { registerValidation } from './helper/validate';
 import userpic from './assets/userpic.jpg';
 import convertToBase64 from './helper/convert';
 import './style.css';
@@ -18,7 +18,7 @@ export default function Register() {
       email: 'abc@gmail.com',
       password: 'password@123'
     },
-    validate: usernameValidate,
+    validate: registerValidation,
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async values => {
@@ -51,13 +51,13 @@ export default function Register() {
                   </div>
                   <form onSubmit={formik.handleSubmit}>
                   <div className="form-group my-4">
-                      <input {...formik.getFieldProps('email')} type="email" id="typeEmailX-2" className="form-control form-control-lg" placeholder='Email*' />
+                      <input {...formik.getFieldProps('email')} type="text" id="emailId" className="form-control form-control-lg" placeholder='Email*' />
                     </div>
                     <div className="form-group my-4">
-                      <input {...formik.getFieldProps('username')} type="username" id="typeEmailX-2" className="form-control form-control-lg" placeholder='username*' />
+                      <input {...formik.getFieldProps('username')} type="text" id="username-2" className="form-control form-control-lg" placeholder='username*' />
                     </div>
                     <div className="form-group my-4">
-                      <input {...formik.getFieldProps('password')} type="password" id="typeEmailX-2" className="form-control form-control-lg" placeholder='password*' />
+                      <input {...formik.getFieldProps('password')} type="text" id="password-2" className="form-control form-control-lg" placeholder='password*' />
                     </div>
                     <button type="submit" className="btn btn-primary">Register</button>
                   </form>
