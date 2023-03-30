@@ -11,13 +11,13 @@ router.route('/registerMail').post((req,res)=> res.end());//send mail --fix comm
 router.route('/authenticate').post((req,res)=> res.end());// authentication
 router.route('/login').post(controller.login);// login
 /** GET Methods */
-router.route('/user/:username').get();//get user with username
-router.route('/generateOTP').get();//generate random otp
-router.route('/verifyOTP').get();//verify otp
-router.route('/createResetSession').get();//reset all the variables
+router.route('/user/:username').get(controller.getUser);//get user with username
+router.route('/generateOTP').get(controller.genrateOTP);//generate random otp
+router.route('/verifyOTP').get(controller.verifyOTP);//verify otp
+router.route('/createResetSession').get(controller.createResetSession);//reset all the variables
 /** PUT Methods */
-router.route('/updateUser').put();//to update the userprofile
-router.route('/resetPassword').put();// use to reset password
+router.route('/updateUser').put(controller.updateUser);//to update the userprofile
+router.route('/resetPassword').put(controller.resetPassword);// use to reset password
 /** DELETE Methods */
 
 export default router;
