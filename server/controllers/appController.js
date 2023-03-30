@@ -1,7 +1,24 @@
 import UserModel from "../model/User.model.js";
 import bcrypt from 'bcrypt';
+import otpGenerator from 'otp-generator';
 import jwt from 'jsonwebtoken';
 import ENV from '../config.js';
+
+/** middleware for verify usesr */
+
+export async function verifyUser(req, res, next) {
+    try {
+        const { username } = req.method == 'GET' ? req.query : req.body;
+        // check the user existance
+        let exist = await UserModel.findOne({ username });
+        if (!exist) {
+            return res.status(404).send({ error: "Can't find username" });
+        }
+        next();
+    } catch (error) {
+        return res.status(404).send({ error: "authentication error" })
+    }
+}
 
 /** POST: http://localhost:8080/api/register
   :{
@@ -53,10 +70,10 @@ export async function register(req, res) {
                     bcrypt.hash(password, 10)
                         .then(hashedPassword => {
                             const user = new UserModel({
-                                username,
+                                username: username,
                                 password: hashedPassword,
                                 profile: profile || '',
-                                email
+                                email: email,
                             });
                             user.save()
                                 .then(result => res.status(201).send({ msg: "User Registered successfully!" }))
@@ -90,7 +107,7 @@ export async function login(req, res) {
                 bcrypt.compare(password, user.password)
                     .then(passwordCheck => {
                         if (!passwordCheck) {
-                            return res.status(400).send({ error: "don't have password" });
+                            return res.status(400).send({ error: "don't have password" });//--fix-me
                         }
                         //create jwt token
                         const token = jwt.sign({
@@ -122,7 +139,26 @@ export async function login(req, res) {
  * 
  */
 export async function getUser(req, res) {
-    res.json('getUser route');
+    const { username } = req.params;
+
+    try {
+        if (!username) {
+            return res.status(501).send({ error: "Invalid Username" });
+        }
+        UserModel.findOne({ username }).then(user => {
+            if (!user) {
+                return res.status(501).send({ error: "couldn't find the user" });
+            }
+            //mongoose returns mongo data so we need to convert--way 2: rest._doc return
+            const { password, ...rest } = Object.assign({}, user.toJSON());//filtered the password
+            return res.status(201).send(rest);
+        })
+            .catch(err => {
+                return res.status(500).send(err);
+            });
+    } catch (error) {
+        return res.status(404).send({ error: "Can't find user data" });
+    }
 }
 
 /** 
@@ -137,27 +173,89 @@ export async function getUser(req, res) {
  * }
  */
 export async function updateUser(req, res) {
-    res.json('updateUser route');
+    try {
+
+        // const id = req.query.id;
+        const { userId } = req.user;
+
+        if (userId) {
+            const body = req.body;
+            //update the data
+            UserModel.updateOne({ _id: userId }, body).then(user => {
+                if (!user) return res.status(501).send({ error: "couldn't find user" });
+                return res.status(201).send({ msg: "Record updated...!" })
+            }).catch(error => {
+
+                return res.status(401).send({ error: "User Not Found...!" });
+
+            });
+        } else {
+            return res.status(401).send({ error: "User not found!" })
+        }
+
+    } catch (error) {
+        return res.status(401).send({ error });
+    }
 }
 
 /**GET: http://localhost:8080/api/genrateOTP */
 export async function genrateOTP(req, res) {
-    res.json('otp generate route');
+    req.app.locals.OTP = await otpGenerator.generate(6, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false });
+    res.status(201).send({ code: req.app.locals.OTP });
 }
 
 /**GET: http://localhost:8080/api/verifyOTP */
 export async function verifyOTP(req, res) {
-    res.json('verifyOTP route');
+    const { code } = req.query;
+    if (parseInt(req.app.locals.OTP) === parseInt(code)) {
+        req.app.locals.OTP = null;//reset otp value
+        req.app.locals.resetSession = true;// set the session for reset password
+        return res.status(201).send({ msg: 'verified successfully!' });
+    }
+    return res.status(400).send({ error: 'Invalid OTP' });
 }
 
 // redirects user when the otp is valid
 /**GET: http://localhost:8080/api/createResetSession */
 export async function createResetSession(req, res) {
-    res.json('createResetSession route');
+    if (req.app.locals.resetSession) {
+        req.app.locals.resetSession = false; //allow access to this route only once
+        return res.status(201).send({ msg: "access granted!" });
+    }
+    return res.status(440).send({ error: "Session expired!" });
 }
 
 // update the password when user have valid otp
 /**PUT: http://localhost:8080/api/resetPassword */
 export async function resetPassword(req, res) {
-    res.json('resetPassword route');
+    try {
+        const { username, password } = req.body;
+        try {
+            UserModel.findOne({ username })
+                .then(user => {
+                    bcrypt.hash(password, 10)
+                        .then(hashedPassword => {
+                            UserModel.updateOne({ username: user.username }, { password: hashedPassword })
+                                .then(data => {
+                                    return res.status(201).send({ msg: "Password Updated!" });
+                                })
+                                .catch(error => {
+                                    return res.status(500).send({ error });
+                                })
+                        })
+                        .catch(error => {
+                            return res.send(500).send({
+                                error: "unable to hash(encrypt) password"
+                            })
+                        })
+                })
+                .catch(error => {
+                    return res.status(404).send({ error: "Username not found@!" });
+                })
+        } catch (error) {
+            return res.status(500).send({ error });
+        }
+    } catch (error) {
+        return res.status(401).send({ error });
+    }
 }
