@@ -10,22 +10,21 @@ import ENV from '../config.js';
 //     port: 587,
 //     secure: false, // true for 465, false for other ports
 //     auth: {
-//         user: ENV.EMAIL, // generated ethereal user
-//         pass: ENV.PASSWORD, // generated ethereal password
+//         user: ENV.EMAIL_USERNAME, // generated ethereal user
+//         pass: ENV.EMAIL_PASSWORD // generated ethereal password
 //     },
 // }
-
-//let transporter = nodemailer.createTransport(nodeconfig);
-const transporter = nodemailer.createTransport({
-    name: 'example.com' ,
-    host: 'smtp.ethereal.email',
+//using real gmail account!
+let nodeconfig = {
+    service : 'gmail',
     port: 587,
+    secure: false, // true for 465, false for other ports
     auth: {
-        user: 'timmy32@ethereal.email',
-        pass: 'DavdMQAexNaB7y7eY7'
-    }
-});
-
+        user: ENV.EMAIL_USERNAME, // gmail
+        pass: ENV.EMAIL_PASSWORD // password
+    },
+}
+const transporter = nodemailer.createTransport(nodeconfig);
 let MailGenerator = new Mailgen({
     theme: "default",
     product: {
@@ -55,9 +54,10 @@ export const registerMail = async (req, res) => {
             outro: 'Need help, or queries? just reply to this email, we\'d love to help you'
         }
     }
+    //generates the email
     var emailBody = MailGenerator.generate(email);
     let message = {
-        from: 'timmy32@ethereal.email',
+        from: ENV.EMAIL_USERNAME,
         to: userEmail,
         subject: subject || "Thank you for registering!",
         html: emailBody
@@ -65,9 +65,12 @@ export const registerMail = async (req, res) => {
 
     //sending mail
     transporter.sendMail(message)
-        .then(() => {
-            //console.log(res);
-            return res.status(200).send({ msg: "You should recieve an email from us." });
+        .then((info) => {
+            return res.status(200).send({
+                msg: "You should recieve an email from us.",
+                info: info.messageId,
+                preview: nodemailer.getTestMessageUrl(info)
+            });
         })
         .catch(error => {
             res.status(500).send({ error });

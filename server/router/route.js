@@ -12,7 +12,7 @@ import Auth, { localVariables } from "../middleware/authentication.js";
 /** POST Methods */
 router.route('/register').post(controller.register);//register user
 router.route('/registerMail').post(registerMail);//send mail --fix comment it
-router.route('/authenticate').post((req, res) => res.end());// authentication
+router.route('/authenticate').post(controller.verifyUser,(req, res) => res.end());// authentication
 router.route('/login').post(controller.verifyUser, controller.login);// login
 /** GET Methods */
 router.route('/user/:username').get(controller.getUser);//get user with username
