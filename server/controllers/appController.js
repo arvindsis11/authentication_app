@@ -229,6 +229,9 @@ export async function createResetSession(req, res) {
 /**PUT: http://localhost:8080/api/resetPassword */
 export async function resetPassword(req, res) {
     try {
+        if(!req.app.locals.resetSession){
+            return res.status(404).send({error: "Session Expired!"});
+        }
         const { username, password } = req.body;
         try {
             UserModel.findOne({ username })
@@ -237,6 +240,7 @@ export async function resetPassword(req, res) {
                         .then(hashedPassword => {
                             UserModel.updateOne({ username: user.username }, { password: hashedPassword })
                                 .then(data => {
+                                    req.app.locals.resetSession = false;//fix--me
                                     return res.status(201).send({ msg: "Password Updated!" });
                                 })
                                 .catch(error => {
