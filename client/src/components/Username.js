@@ -1,23 +1,28 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import {Toaster} from 'react-hot-toast';
-import {useFormik} from 'formik';
+import React, { useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import { useFormik } from 'formik';
 import { usernameValidate } from './helper/validate';
+import { useAuthStore } from '../store/store';
 import './style.css';
 // import styles from './styles/Username.module.css';
 /**another way to use styles */
 export default function Username() {
 
+  const navigate = useNavigate();//fix here
+  const setUsername = useAuthStore(state => state.setUsername);
+
   const formik = useFormik({
-    initialValues:{
-      username:'',
-      password:''
+    initialValues: {
+      username: 'ahshsh',
+      password: ''
     },
-    validate : usernameValidate,
-    validateOnBlur:false,
-    validateOnChange:false,
-    onSubmit : async values =>{
-      console.log(values)
+    validate: usernameValidate,
+    validateOnBlur: false,
+    validateOnChange: false,
+    onSubmit: async values => {
+      // console.log(values)
+      setUsername(values.username);
     }
   })
 
@@ -34,10 +39,10 @@ export default function Username() {
                   <h3 className="mb-5">Sign in</h3>
                   <form onSubmit={formik.handleSubmit}>
                     <div className="form-group my-4">
-                      <input {...formik.getFieldProps('username')} type="username" id="typeEmailX-2" className="form-control form-control-lg" placeholder='username' />
+                      <input {...formik.getFieldProps('username')} type="username" id="username" className="form-control form-control-lg" placeholder='username' />
                     </div>
                     <div className="form-group my-4">
-                      <input {...formik.getFieldProps('password')} type="password" id="typeEmailX-2" className="form-control form-control-lg" placeholder='password' />
+                      <input {...formik.getFieldProps('password')} type="password" id="password-2" className="form-control form-control-lg" placeholder='password' />
                     </div>
                     <button type="submit" className="btn btn-primary">Submit</button>
                   </form>

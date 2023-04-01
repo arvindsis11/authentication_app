@@ -17,7 +17,7 @@ router.route('/login').post(controller.verifyUser, controller.login);// login
 /** GET Methods */
 router.route('/user/:username').get(controller.getUser);//get user with username
 router.route('/generateOTP').get(controller.verifyUser, localVariables, controller.genrateOTP);//generate random otp
-router.route('/verifyOTP').get(controller.verifyOTP);//verify otp --fix-me use> controller.verifyUser
+router.route('/verifyOTP').get(controller.verifyUser,controller.verifyOTP);//verify otp --fix-me use> controller.verifyUser
 router.route('/createResetSession').get(controller.createResetSession);//reset all the variables
 /** PUT Methods */
 router.route('/updateUser').put(Auth, controller.updateUser);//to update the userprofile

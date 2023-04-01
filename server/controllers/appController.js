@@ -151,7 +151,7 @@ export async function getUser(req, res) {
             }
             //mongoose returns mongo data so we need to convert--way 2: rest._doc return
             const { password, ...rest } = Object.assign({}, user.toJSON());//filtered the password
-            return res.status(201).send(rest);
+            return res.status(201).send(rest);//status 201
         })
             .catch(err => {
                 return res.status(500).send(err);
@@ -164,7 +164,7 @@ export async function getUser(req, res) {
 /** 
  * PUT: http://localhost:8080/api/updateUser
  * @param;{
- * "id":"<userid>"
+ * "header":"<token>"
  * }
  * body:{
  *  firstname: '',
