@@ -5,20 +5,24 @@ import { useFormik } from 'formik';
 import { profileValidation } from './helper/validate';
 import userpic from './assets/userpic.jpg';
 import convertToBase64 from './helper/convert';
+import useFetch from '../hooks/fetch.hook';
 import './style.css';
+import { useAuthStore } from '../store/store';
 
 export default function Profile() {
 
 
-  const [file, setFile] = useState()
+  const [file, setFile] = useState();
+  const {username} = useAuthStore(state => state.auth);
+  const [{isLoading,apiData,serverError}] = useFetch(`user/${username}`);
 
   const formik = useFormik({
     initialValues: {
-      firstname: '',
-      lastname: '',
-      email: '',
-      mobile: '',
-      address: ''
+      firstName : apiData?.firstName || '',
+      lastName: apiData?.lastName || '',
+      email: apiData?.email || '',
+      mobile: apiData?.mobile || '',
+      address : apiData?.address || ''
     },
     validate: profileValidation,
     validateOnBlur: false,
@@ -34,6 +38,12 @@ export default function Profile() {
     setFile(base64);
   }
 
+  if(isLoading) return <h1 className="text-center text-danger">isLoading</h1>
+  if(serverError) return <h1 className="text-center text-danger">{serverError.message}</h1>
+  if (isLoading === undefined || serverError===undefined|| apiData===undefined) {
+    return null;
+  }
+
   return (
     <>
       <section className="vh-100" style={{ "backgroundColor": "#508bfc" }}>
@@ -44,10 +54,10 @@ export default function Profile() {
               <div className="card shadow-2-strong" style={{ "borderRadius": "1rem" }}>
                 <div className="card-body p-5 text-center">
                   <h3 className="mb-3">Profile</h3>
-                  <small className='text-muted'>You can update details!</small>
+                  <small className='text-muted'>Hi welcome {username}!</small>
                   <div>
                     <label htmlFor="profile">
-                      <img src={file || userpic} className="mx-auto d-block" alt="John" style={{ width: "30%", borderRadius: "50%" }} />
+                      <img src={apiData?.profile || file || userpic} className="mx-auto d-block" alt="John" style={{ width: "30%", borderRadius: "50%" }} />
                     </label>
                     <input onChange={onUpload} type="file" name="profile" id="profile" />
                   </div>

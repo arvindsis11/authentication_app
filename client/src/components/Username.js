@@ -1,20 +1,24 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import { useFormik } from 'formik';
 import { usernameValidate } from './helper/validate';
 import { useAuthStore } from '../store/store';
+// import useFetch from '../hooks/fetch.hook';
 import './style.css';
+import { verifyPassword } from './helper/apiconfig';
 // import styles from './styles/Username.module.css';
 /**another way to use styles */
 export default function Username() {
 
   const navigate = useNavigate();//fix here
   const setUsername = useAuthStore(state => state.setUsername);
+  // const { username } = useAuthStore(state => state.auth);
+  // const [{ isLoading, apiData, serverError }] = useFetch(`user/${username}`);
 
   const formik = useFormik({
     initialValues: {
-      username: 'ahshsh',
+      username: '',
       password: ''
     },
     validate: usernameValidate,
@@ -23,9 +27,29 @@ export default function Username() {
     onSubmit: async values => {
       // console.log(values)
       setUsername(values.username);
+      // navigate('/password'); --fix
+      let loginPromise = verifyPassword({ username: values.username, password: values.password });
+      // console.log(values);
+      toast.promise(loginPromise, {
+        loading: "please wait...",
+        success: <b>Login Successful...!</b>,
+        error: <b>Password Not Match</b>
+      })
+
+      loginPromise.then(res => {
+        let { token } = res.data;
+        localStorage.setItem('token', token);
+        navigate('/profile')
+      })
     }
   })
-
+  // if (isLoading) {
+  //   return <div>Loading...</div>;
+  // }
+  
+  // if (serverError) {
+  //   return <div>Error: {serverError.message}</div>;
+  // }
   return (
     <>
       <section className="vh-100" style={{ "backgroundColor": "#508bfc" }}>

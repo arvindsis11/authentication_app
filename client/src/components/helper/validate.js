@@ -4,6 +4,7 @@ import { authenticate } from "./apiconfig";
 
 export async function usernameValidate(values) {
     const errors = usernameVerify({}, values);
+    // passwordVerify(errors,values);
     if(values.username){
         //check user exist or not
         const {status} = await authenticate(values.username);
