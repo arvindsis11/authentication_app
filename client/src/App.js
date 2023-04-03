@@ -10,6 +10,9 @@ import Password from './components/Password';
 import Profile from './components/Profile';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+/**  Authorized--middleware user--protected routes */
+import { AuthorizedUser } from './middleware/auth';
+
 const router = createBrowserRouter([
     {
         path: '/',
@@ -33,7 +36,7 @@ const router = createBrowserRouter([
     },
     {
         path: '/profile',
-        element : <Profile></Profile>
+        element : <AuthorizedUser><Profile/></AuthorizedUser>
     },
     {
         path: '/*',
