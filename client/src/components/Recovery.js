@@ -1,8 +1,56 @@
-import React from 'react';
-import {Toaster} from 'react-hot-toast';
+import React, { useEffect, useState } from 'react';
+import { Toaster, toast } from 'react-hot-toast';
+import { useAuthStore } from '../store/store';
+import { generateOTP, verifyOTP } from './helper/apiconfig';
 import './style.css';
+import { useNavigate } from 'react-router-dom';
+import useFetch from '../hooks/fetch.hook';
 
 export default function Recovery() {
+  const { username } = useAuthStore(state => state.auth);
+  // const [{isLoading,apiData}] = useFetch(); --planned
+  const [OTP, setOTP] = useState();
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    generateOTP(username).then((OTP) => {
+      console.log(OTP)
+      if (OTP) return toast.success('OTP has been send to your email!');
+      return toast.error('an error occured while generating OTP!')
+    })
+  }, [username]);
+
+  async function onSubmit(e) {
+    e.preventDefault();
+    try {
+      let { status } = await verifyOTP({ username, code: OTP })
+      if (status === 201) {
+        toast.success('Verified Successfully!')
+        return navigate('/reset')
+      }
+    } catch (error) {
+      return toast.error('Wrong OTP! Check email again!')
+    }
+  }
+
+  // handler of resend OTP
+  function resendOTP() {
+
+    let sentPromise = generateOTP(username);
+
+    toast.promise(sentPromise,
+      {
+        loading: 'Sending...',
+        success: <b>OTP has been sent to your email!</b>,
+        error: <b>an error occured!</b>,
+      }
+    );
+
+    sentPromise.then((OTP) => {
+      console.log(OTP)
+    });
+
+  }
 
 
   return (
@@ -15,11 +63,11 @@ export default function Recovery() {
               <div className="card shadow-2-strong" style={{ "borderRadius": "1rem" }}>
                 <div className="card-body p-5 text-center">
                   <h3 className="mb-5">Recovery</h3>
-                  <small className='text-muted'>Enter OTP</small>
-                  <form>
+                  {/* <small className='text-muted'>Enter OTP</small> */}
+                  <small className="text-muted text-left">Enter 6 digit OTP sent to your email.</small>
+                  <form onSubmit={onSubmit}>
                     <div className="form-group my-4">
-                      <small className="text-sm text-left">Enter 6 digit OTP sent to your email.</small>
-                      <input type="username" id="typeEmailX-2" className="form-control form-control-lg" placeholder='OTP' />
+                      <input onChange={(e) => setOTP(e.target.value)} type="text" id="otp-2" className="form-control form-control-lg" placeholder='OTP' />
                     </div>
                     <button type="submit" className="btn btn-primary">Submit</button>
                   </form>
@@ -28,7 +76,7 @@ export default function Recovery() {
                     <small>forgot password? <Link to="/recovery" className="text-danger">recover</Link></small>
                   </div> */}
                   <div className="text-center">
-                    <small>Can't get OTP? <button  className="text-danger bg-white">Resend</button></small>
+                    <small>Can't get OTP? <button onClick={resendOTP} className="text-danger bg-white">Resend</button></small>
                   </div>
                 </div>
               </div>

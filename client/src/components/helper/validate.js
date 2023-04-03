@@ -102,3 +102,29 @@ export async function profileValidation(values){
     const errors = emailVerify({},values);
     return errors;
 }
+
+
+
+
+export async function userRecoveryValidate(values) {
+    const errors = userRecoveryVerify({}, values);
+    // passwordVerify(errors,values);
+    if(values.username){
+        //check user exist or not
+        const {status} = await authenticate(values.username);
+        if(status!==200){
+            errors.exists = toast.error('User does not exists');
+        }
+    }
+    return errors;
+}
+
+
+function userRecoveryVerify(error = {}, values) {
+    if (!values.username) {
+        error.username = toast.error('Username required...!');
+    } else if (values.username.includes(' ')) {
+        error.username = toast.error('Username Invalid...!');
+    } 
+    return error;
+}

@@ -72,7 +72,7 @@ export default function Username() {
                   </form>
                   <hr className="my-4" />
                   <div className="text-center">
-                    <small>forgot password? <Link to="/recovery" className="text-danger">recover</Link></small>
+                    <small>forgot password? <Link to="/userverify" className="text-danger">recover</Link></small>
                   </div>
                   <div className="text-center">
                     <small>Not a member? <Link to="/register" className="text-danger">register here</Link></small>

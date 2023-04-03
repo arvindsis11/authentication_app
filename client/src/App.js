@@ -6,7 +6,7 @@ import PageNotFound from './components/PageNotFound';
 import Reset from './components/Reset';
 import Recovery from './components/Recovery';
 import Register from './components/Register';
-import Password from './components/Password';
+import UserVerify from './components/UserVerify';
 import Profile from './components/Profile';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -23,8 +23,8 @@ const router = createBrowserRouter([
         element : <Register></Register>
     },
     {
-        path: '/password',
-        element : <Password></Password>
+        path: '/userverify',
+        element : <UserVerify></UserVerify>
     },
     {
         path: '/reset',
