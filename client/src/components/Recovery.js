@@ -4,7 +4,7 @@ import { useAuthStore } from '../store/store';
 import { generateOTP, verifyOTP } from './helper/apiconfig';
 import './style.css';
 import { useNavigate } from 'react-router-dom';
-import useFetch from '../hooks/fetch.hook';
+// import useFetch from '../hooks/fetch.hook';
 
 export default function Recovery() {
   const { username } = useAuthStore(state => state.auth);

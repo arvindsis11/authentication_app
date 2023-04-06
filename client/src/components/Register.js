@@ -16,9 +16,9 @@ export default function Register() {
 
   const formik = useFormik({
     initialValues: {
-      username: 'arvindsis35',
-      email: 'abc@gmail.com',
-      password: 'password@123'
+      username: '',
+      email: '',
+      password: ''
     },
     validate: registerValidation,
     validateOnBlur: false,
@@ -30,7 +30,7 @@ export default function Register() {
       toast.promise(registerPromise,{
         loading: 'Registeration is process...',
         success : <b>Registered successfully...!</b>,
-        error : <b>Could not register</b>
+        error : <b>please use unique email</b>
       });
       registerPromise.then(function(){
         navigate('/');
