@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {useNavigate } from 'react-router-dom';
 import { Toaster, toast } from 'react-hot-toast';
 import { useFormik } from 'formik';
@@ -17,6 +17,10 @@ export default function Profile() {
   // const {username} = useAuthStore(state => state.auth);
   const [{isLoading,apiData,serverError}] = useFetch();
   const navigate = useNavigate();
+
+  useEffect(()=>{
+    console.log(apiData);
+  })
 
   const formik = useFormik({
     initialValues: {

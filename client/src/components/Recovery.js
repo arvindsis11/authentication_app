@@ -40,7 +40,7 @@ export default function Recovery() {
 
     toast.promise(sentPromise,
       {
-        loading: 'Sending...',
+        loading: <b>Sending otp...</b>,
         success: <b>OTP has been sent to your email!</b>,
         error: <b>an error occured!</b>,
       }

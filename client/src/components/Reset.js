@@ -1,40 +1,50 @@
-import React from 'react';
-import {Toaster, toast} from 'react-hot-toast';
-import {useFormik} from 'formik';
+import React, { useEffect } from 'react';
+import { Toaster, toast } from 'react-hot-toast';
+import { useFormik } from 'formik';
 import { resetPasswordValidation } from './helper/validate';
 import { resetPassword } from './helper/apiconfig';
 import './style.css';
 import { useAuthStore } from '../store/store';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
+import useFetch from '../hooks/fetch.hook';
 
 export default function Reset() {
 
+  const { username } = useAuthStore(state => state.auth);
   const navigate = useNavigate();
-
-  const {username} = useAuthStore(state => state.auth);
+  const [{ apiData,status,serverError,isLoading }] = useFetch('createResetSession');
+  useEffect(()=>{
+    console.log(apiData,status,serverError,isLoading);
+  })
 
   const formik = useFormik({
-    initialValues:{
-      password:'',
-      confirm_pwd:''
+    initialValues: {
+      password: 'admin@123',
+      confirm_pwd: 'admin@123'
     },
-    validate : resetPasswordValidation,
-    validateOnBlur:false,
-    validateOnChange:false,
-    onSubmit : async values =>{
-      console.log(values);
-      let resetPromise = resetPassword({username,password:values.password});
-      toast.promise(resetPromise,{
-        loading:'Updating password...',
-        success: <b>Reset password successful</b>,
-        error : <b>Something went wrong!</b>
+    validate: resetPasswordValidation,
+    validateOnBlur: false,
+    validateOnChange: false,
+    onSubmit: async values => {
+
+      let resetPromise = resetPassword({ username, password: values.password });
+
+
+      toast.promise(resetPromise, {
+        loading: 'Updating...',
+        success: <b>Reset Successfully...!</b>,
+        error: <b>Could not Reset!</b>
       });
-      resetPromise.then(function(){
-        navigate("/");
-      })
+
+      resetPromise.then(function () { navigate('/') })
+
     }
   })
 
+
+  // if (isLoading) return <h1 className='text-2xl font-bold'>isLoading</h1>; fix here
+  if (serverError)  return <Navigate to={'/userverify'} replace={true}></Navigate>
+  if (status && status !== 201) return <Navigate to={'/userverify'} replace={true}></Navigate>
   return (
     <>
       <section className="vh-100" style={{ "backgroundColor": "#508bfc" }}>
