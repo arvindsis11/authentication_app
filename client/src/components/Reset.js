@@ -43,8 +43,8 @@ export default function Reset() {
 
 
   // if (isLoading) return <h1 className='text-2xl font-bold'>isLoading</h1>; fix here
-  if (serverError)  return <Navigate to={'/userverify'} replace={true}></Navigate>
-  if (status && status !== 201) return <Navigate to={'/userverify'} replace={true}></Navigate>
+ // if (serverError)  return <Navigate to={'/userverify'} replace={true}></Navigate>
+//  if (status && status !== 201) return <Navigate to={'/userverify'} replace={true}></Navigate>
   return (
     <>
       <section className="vh-100" style={{ "backgroundColor": "#508bfc" }}>
